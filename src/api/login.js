@@ -2,29 +2,70 @@ import { BASE_URL } from './const.js'
 import { getAccessTokenFromLocalStorage, saveAccessTokenToLocalStorage } from '../utils/accessTokenHandler.js'
 
 /*********
- *  실습 2-1
+ *  실습 2-1 로그인 API 만들기
  * */
+
+
+
+// 로그인 (POST) API Spec
+// URL: ‘https://wanted-p2.bluestragglr.com/auth/login’
+// body: { username*: string, password*: string }
+// response: { access_token: string }
 
 export const loginWithToken = async (args) => {
   // TODO(2-1): 로그인 API 호출 및 토큰 반환하기
-  // POST, `${ BASE_URL }/auth/login`을 호출하세요.
-  // API Spec은 강의 자료를 참고하세요.
   // access_token 발급에 성공한 경우에는 { result: 'success', access_token: string } 형태의 값을 반환하세요.
 
-  return {
-    result: 'fail',
-    access_token: null
-  }
-}
+  try{
+    // POST, `${ BASE_URL }/auth/login`을 호출하세요.
+    const response = await fetch(`${ BASE_URL }/auth/login`,{
+      method : 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(args),
+    });
+  
+    const data = await response.json();
+    console.log(data);
+    return {
+      result : 'success',
+      access_token : data.access_token,
+    };
+    
+  }catch (error){
+    return {
+      result: 'fail',
+      access_token: null
+    };
+  };
+ 
+};
+const logon = async (args) =>{
 
+}
 export const getCurrentUserInfoWithToken = async (token) => {
   // TODO(2-1): 함수에서 토큰을 직접 주입받아 사용하기
   // GET, `${ BASE_URL }/profile`을 호출하세요.
+  try {
+    const response =  await fetch(`${ BASE_URL }/profile`, {
+      method : 'GET',
+      headers : {
+        'Authorzation': `Bearer ${token}`
+      },
+    });
+    if (!response.ok) {
+      throw new Error('User info retrieval failed');
+    }
+    const userInfo = await response.json();
+    return userInfo;
+  }catch(error){
+    return null
+  }
   // argument로 전달받은 token을 Authorization header에 Bearer token으로 넣어주세요.
   // API Spec은 강의 자료를 참고하세요.
   // 유저 정보 조회에 성공한 경우에는 UserInfo 타입의 값을 반환하세요.
 
-  return null
 }
 
 
